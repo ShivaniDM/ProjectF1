@@ -1,0 +1,30 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Virtual environment directories
+myenv/
+env/
+venv/
+
+# Environment variables file
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore logs and temp files
+*.log
+*.tmp
+
+# Ignore SQL and database files
+*.sqlite3
+
+# Ignore compiled files and executables
+*.exe
+*.out
+*.class
