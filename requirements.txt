@@ -32,6 +32,7 @@ psycopg2==2.9.9
 psycopg2-binary==2.9.9
 pure_eval==0.2.3
 pyarrow==17.0.0
+SQLAlchemy==2.0.33
 pycparser==2.22
 Pygments==2.18.0
 python-dateutil==2.9.0.post0
