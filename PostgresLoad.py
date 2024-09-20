@@ -3,7 +3,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 import psycopg2
 import os
-
+import urllib.parse
 
 # Access environment variables
 pg_host = os.getenv('PGHOST')
@@ -13,8 +13,10 @@ pg_database = os.getenv('PGDATABASE')
 
 # List of functions to process and upload
 functions = [f1_driver_standing]
+
+encoded_password = urllib.parse.quote_plus(pg_password)
 # Retrieve the database connection string from environment variables
-conn_string = f'postgresql://{pg_user}:{pg_password}@{pg_host}:5432/{pg_database}'
+conn_string = f'postgresql://{pg_user}:{encoded_password}@{pg_host}:5432/{pg_database}'
 
 # Create a database engine
 db = create_engine(conn_string)
