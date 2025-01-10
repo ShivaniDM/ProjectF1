@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000';
+// Use environment variables for API URL
+const BASE_URL = import.meta.env.PROD 
+  ? 'https://f1-api-verstappen-free.azurewebsites.net'  // Production URL
+  : 'http://localhost:8000';                            // Development URL
 
 const F1Dashboard = () => {
   const [raceResults, setRaceResults] = useState([]);
@@ -12,19 +15,12 @@ const F1Dashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        setError(null); // Reset error state
-        
-        const response = await axios.get(`${BASE_URL}/api/standings`, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-        
+        setError(null);
+        const response = await axios.get(`${BASE_URL}/api/standings`);
         setRaceResults(response.data);
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError(err.response?.data?.detail || err.message || 'Failed to fetch data');
+        setError(err.response?.data?.detail || err.message || 'Error fetching race results');
       } finally {
         setLoading(false);
       }
