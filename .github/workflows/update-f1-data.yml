@@ -10,25 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # Step 1: Checkout the repository content
     - name: Checkout repository content
       uses: actions/checkout@v2
 
-    # Step 2: Setup Python
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
 
-    # Step 3: Install Python packages
-    - name: Install Python packages
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         cd Backend
         pip install -r requirements.txt
 
-    # Step 4: Execute your scripts
-    - name: Run extraction and push scripts
+    - name: Run data pipeline
       env:
         AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
         AZURE_CONTAINER_NAME: ${{ secrets.AZURE_CONTAINER_NAME }}
