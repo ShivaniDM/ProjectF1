@@ -2,7 +2,7 @@ name: update f1 data
 
 on:
   schedule:
-    - cron: '0 0 * * 1,2' # Runs at 00:00 every Saturday and Sunday
+    - cron: '0 0 * * 1,2' # Runs at 00:00 every Monday and Tuesday
   workflow_dispatch:
 
 jobs:
@@ -24,6 +24,7 @@ jobs:
     - name: Install Python packages
       run: |
         python -m pip install --upgrade pip
+        cd Backend
         pip install -r requirements.txt
 
     # Step 4: Execute your scripts
@@ -37,5 +38,6 @@ jobs:
         PGDATABASE: ${{ secrets.PGDATABASE }}
         PGPASSWORD: ${{ secrets.PGPASSWORD }}
       run: |
+        cd Backend
         python PostgresLoad.py
         python load.py
