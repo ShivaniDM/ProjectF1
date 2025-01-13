@@ -7,3 +7,4 @@ beautifulsoup4==4.12.3
 azure-storage-blob==12.22.0
 pandas==2.2.0
 SQLAlchemy==2.0.25
+pyarrow==14.0.1
