@@ -3,40 +3,51 @@ import pandas as pd
 from sqlalchemy import create_engine
 import psycopg2
 import os
-import urllib.parse
+from dotenv import load_dotenv
 
-# Access environment variables
-pg_host = os.getenv('PGHOST')
-pg_user = os.getenv('PGUSER')
-pg_password = os.getenv('PGPASSWORD')
-pg_database = os.getenv('PGDATABASE')
+# Load environment variables
+load_dotenv()
+
+# Access environment variables with defaults for development
+pg_host = os.getenv('PGHOST', 'your-server.postgres.database.azure.com')
+pg_user = os.getenv('PGUSER', 'your-username')
+pg_password = os.getenv('PGPASSWORD', 'your-password')
+pg_database = os.getenv('PGDATABASE', 'your-database')
+pg_port = os.getenv('PGPORT', '5432')
 
 # List of functions to process and upload
 functions = [f1_driver_standing]
 
-encoded_password = urllib.parse.quote_plus(pg_password)
-# Retrieve the database connection string from environment variables
-conn_string = f'postgresql://{pg_user}:{encoded_password}@{pg_host}:5432/{pg_database}'
+def create_connection_string(host, user, password, database, port):
+    # Create a safe connection string without need for additional encoding
+    return f'postgresql://{user}:{password}@{host}:{port}/{database}'
 
-# Create a database engine
-db = create_engine(conn_string)
-
-# Establish a database connection
-conn = db.connect()
-
-# Loop through the list of functions and push data to the database
-for fun in functions:
-    # Get the name of the current function
-    function_name = fun.__name__
+try:
+    # Create connection string
+    conn_string = create_connection_string(pg_host, pg_user, pg_password, pg_database, pg_port)
     
-    # Call the function to get the DataFrame
-    result_df = fun()
+    # Create database engine
+    print("Creating database engine...")
+    db = create_engine(conn_string)
     
-    # Push the DataFrame to the database table with the function name as the table name
-    result_df.to_sql(function_name, con=conn, if_exists='replace', index=False)
+    # Establish database connection
+    print("Connecting to database...")
+    conn = db.connect()
     
-    # Print a message indicating data has been pushed for the current function
-    print(f'Pushed data for {function_name}')
-
-# Close the database connection
-conn.close()
+    # Loop through functions and push data
+    for fun in functions:
+        function_name = fun.__name__
+        print(f"Executing {function_name}...")
+        result_df = fun()
+        
+        print(f"Pushing data for {function_name}...")
+        result_df.to_sql(function_name, con=conn, if_exists='replace', index=False)
+        print(f'Successfully pushed data for {function_name}')
+    
+except Exception as e:
+    print(f"Error occurred: {str(e)}")
+    raise
+finally:
+    if 'conn' in locals():
+        conn.close()
+        print("Database connection closed")
