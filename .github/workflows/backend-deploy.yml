@@ -1,0 +1,47 @@
+name: Backend Deploy  # Name of the workflow
+
+on:
+  push:
+    branches: [ master ]  # Triggers on push to master branch
+    paths:
+      - 'Backend/**'     # Only runs when files in Backend folder change
+  pull_request:
+    branches: [ master ] # Also triggers on PRs to master
+    paths:
+      - 'Backend/**'     # Only for Backend folder changes
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    # Remove the environment line since it's causing the error
+    # environment: production 
+    
+    # Sets up environment variables from GitHub secrets
+    env:
+      PGHOST: ${{ secrets.PGHOST }}
+      PGUSER: ${{ secrets.PGUSER }}
+      PGPASSWORD: ${{ secrets.PGPASSWORD }}
+      PGDATABASE: ${{ secrets.PGDATABASE }}
+      PGPORT: ${{ secrets.PGPORT }}
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        cd Backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'f1-api-verstappen-free'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ./Backend
